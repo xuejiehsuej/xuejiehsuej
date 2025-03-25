@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}主界面 - 会议助手{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">欢迎, {{ name }}</h1>
+            <p class="lead">使用以下功能帮助您获得更好的会议体验</p>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-summary">
+                <div class="card-body">
+                    <h5 class="card-title">今日会议</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="h2 mb-0">3</div>
+                        <i class="bi bi-calendar-check dashboard-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- 1. 线下参会用户的地图指引 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-primary">
+                    <i class="bi bi-geo-alt"></i>
+                </div>
+                <h5 class="card-title">地图指引</h5>
+                <p class="card-text">获取从出发地到会议地点的最佳路线指引，包括公共交通、驾车或步行导航。</p>
+                <a href="{{ url_for('map_guide') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 问答系统 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-success">
+                    <i class="bi bi-question-circle"></i>
+                </div>
+                <h5 class="card-title">智能问答</h5>
+                <p class="card-text">基于文本语义的智能问答系统，回答关于会议议程、演讲嘉宾、会场布局等问题。</p>
+                <a href="{{ url_for('qa_system') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+				
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 参会指南 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-info">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <h5 class="card-title">参会指南</h5>
+                <p class="card-text">提供详细的参会指南，包括会议日程、会场规则、餐饮服务等信息。</p>
+                <a href="{{ url_for('conference_guide') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 线上用户的会议亮点推荐 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-warning">
+                    <i class="bi bi-star"></i>
+                </div>
+                <h5 class="card-title">会议亮点</h5>
+                <p class="card-text">根据会议内容和用户偏好，推荐会议亮点和不容错过的议程。</p>
+                <a href="{{ url_for('highlights') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 论坛关注度排行 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-danger">
+                    <i class="bi bi-bar-chart"></i>
+                </div>
+                <h5 class="card-title">论坛排行</h5>
+                <p class="card-text">展示各个论坛或议题的关注度排行，帮助了解哪些议题最受欢迎。</p>
+                <a href="{{ url_for('forum_ranking') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. 感兴趣的内容推荐 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-secondary">
+                    <i class="bi bi-lightbulb"></i>
+                </div>
+                <h5 class="card-title">内容推荐</h5>
+                <p class="card-text">根据历史参会数据和兴趣点，推荐相关的会议内容和讨论主题。</p>
+                <a href="{{ url_for('recommendations') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. 相关资料下载入口指引 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-primary">
+                    <i class="bi bi-download"></i>
+                </div>
+                <h5 class="card-title">资料下载</h5>
+                <p class="card-text">提供会议演讲PPT、会议记录和其他相关资料的下载链接。</p>
+                <a href="{{ url_for('downloads') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. 实时语音转文字、多语言翻译 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-success">
+                    <i class="bi bi-translate"></i>
+                </div>
+                <h5 class="card-title">语音翻译</h5>
+                <p class="card-text">提供实时语音转文字服务和多语言同步翻译功能。</p>
+                <a href="{{ url_for('translation') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. 智能区分发言人会议要点自动总结 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-info">
+                    <i class="bi bi-person-lines-fill"></i>
+                </div>
+                <h5 class="card-title">发言人总结</h5>
+                <p class="card-text">智能区分不同发言人，自动总结会议要点。</p>
+                <a href="{{ url_for('speaker_summary') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. AI智能分析和总结 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-warning">
+                    <i class="bi bi-clipboard-data"></i>
+                </div>
+                <h5 class="card-title">AI总结</h5>
+                <p class="card-text">分析会议内容，智能提取关键信息、问答观点、章节脉络，支持多格式导出。</p>
+                <a href="{{ url_for('ai_summary') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. 用户数据安全与隐私保护 -->
+    <div class="col-md-4">
+        <div class="card feature-card h-100">
+            <div class="card-body">
+                <div class="feature-icon bg-danger">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <h5 class="card-title">隐私保护</h5>
+                <p class="card-text">了解我们如何保障您的数据安全和隐私保护措施。</p>
+                <a href="{{ url_for('privacy') }}" class="btn btn-outline-primary mt-auto">访问功能</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
