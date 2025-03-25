@@ -253,29 +253,39 @@
                 justify-content: center;
             }
         }
+
+        /* 添加白板样式 */
+        .whiteboard {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #eaeaea;
+        }
     </style>
 </head>
 <body>
     <!-- 导航栏 -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}">西湖峰会智能系统</a>
+            <a class="navbar-brand" href="/dashboard">西湖峰会智能系统</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">首页</a>
+                        <a class="nav-link" href="/dashboard">首页</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('qa_system') }}">智能问答</a>
+                        <a class="nav-link active" href="/qa-system">智能问答</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('map_guide') }}">地图指引</a>
+                        <a class="nav-link" href="/map-guide">地图指引</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">退出</a>
+                        <a class="nav-link" href="/logout">退出</a>
                     </li>
                 </ul>
             </div>
@@ -293,7 +303,7 @@
             <div class="chat-messages" id="chat-messages">
                 <!-- 初始欢迎消息 -->
                 <div class="message bot-message">
-                    您好！我是西湖数字安全峰会的智能助手。我可以帮助您了解会议信息，获取最佳参会体验。无论您需要查询会议日程、了解特定演讲嘉宾，还是获取最新技术展示的指引，我都能为您提供帮助！请告诉我您的需求或兴趣，我将为您提供最适合的信息。
+                    您好！我是西湖数字安全峰会的智能助手。我可以帮助您了解会议信息，获取最佳参会体验。无论您需要查询会议日程、了解特定演讲嘉宾信息，还是查找会场位置，请随时向我提问。
                 </div>
                 
                 <!-- 建议问题区域 -->
@@ -325,13 +335,20 @@
         const suggestionChips = document.querySelectorAll('.suggestion-chip');
         
         // 会话ID，用于跟踪对话
-        let sessionId = "3a790a6a-1dca-4243-a356-0005fe956cec";
+        let sessionId = null;
         
         // 向聊天框添加消息
         function addMessage(content, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-            messageDiv.textContent = content;
+            
+            // 检查内容是否包含换行，并适当添加HTML
+            if (content.includes('\n')) {
+                // 将换行符转换为<br>标签
+                messageDiv.innerHTML = content.replace(/\n/g, '<br>');
+            } else {
+                messageDiv.textContent = content;
+            }
             
             // 添加消息并滚动到底部
             chatMessages.appendChild(messageDiv);
@@ -370,16 +387,22 @@
             showTypingIndicator();
             
             try {
+                // 构建请求体，包含会话ID（如果有）
+                const requestBody = {
+                    input: message
+                };
+                
+                if (sessionId) {
+                    requestBody.sid = sessionId;
+                }
+                
                 // 发送消息到后端API
                 const response = await fetch('/api/ask', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        input: message,
-                        sid: sessionId
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 if (!response.ok) {
@@ -387,23 +410,27 @@
                 }
                 
                 const data = await response.json();
-                
-                // 更新会话ID（如果提供）
-                if (data.session && data.session.id) {
-                    sessionId = data.session.id;
-                }
+                console.log("API Response:", data); // 调试日志
                 
                 // 从API结果中提取机器人的响应
                 let botResponse = "抱歉，我无法处理您的请求。";
                 
-                if (data.data && data.data.results) {
-                    botResponse = data.data.results;
-                } else if (data.session && data.session.messages && data.session.messages.length > 0) {
-                    // 查找最新的助手消息
-                    for (let i = data.session.messages.length - 1; i >= 0; i--) {
-                        if (data.session.messages[i].role === 'assistant') {
-                            botResponse = data.session.messages[i].content;
-                            break;
+                // 检查API响应是否成功
+                if (data.code === 0 && data.data && data.data.session) {
+                    // 保存会话ID
+                    if (data.data.session.id) {
+                        sessionId = data.data.session.id;
+                    }
+                    
+                    // 从会话消息中获取最新的助手回复
+                    const messages = data.data.session.messages;
+                    if (messages && messages.length > 0) {
+                        // 查找最新的助手消息
+                        for (let i = messages.length - 1; i >= 0; i--) {
+                            if (messages[i].role === 'assistant') {
+                                botResponse = messages[i].content;
+                                break;
+                            }
                         }
                     }
                 }
